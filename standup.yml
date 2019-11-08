@@ -1,0 +1,155 @@
+---
+
+- hosts: localhost
+  gather_facts: no
+  vars:
+    orgs:
+    - Architecture
+    - Development
+    - Operations
+    projects:
+    - name: asa-firewall-compliance-prod
+      org: Operations
+      job_templates:
+        - name: asa-firewall-run-compliance
+        - name: asa-firewall-run-report
+      workflow:
+      - job_template: asa-firewall-run-compliance
+        success:
+        - job_template: asa-firewall-run-report
+          
+
+    # - name: asa-vpn-compliance-devel
+    #   org: Development
+
+    - name: asa-vpn-compliance-prod
+      org: Operations
+      job_templates:
+        - name: asa-vpn-run-compliance
+        - name: asa-vpn-run-report
+      workflow:
+      - job_template: asa-vpn-run-compliance
+        success:
+        - job_template: asa-vpn-run-report
+
+    # - name: bluecoat-proxy-compliance-devel
+    #   org: Development
+
+    - name: bluecoat-proxy-compliance-prod
+      org: Operations
+      job_templates:
+        - name: bluecoat-proxy-run-compliance
+        - name: bluecoat-proxy-run-report
+      workflow:
+      - job_template: bluecoat-proxy-run-compliance
+        success:
+        - job_template: bluecoat-proxy-run-report
+        
+    # - name: checkpoint-firewall-compliance-devel
+    #   org: Development
+
+    - name: checkpoint-firewall-compliance-prod
+      org: Operations
+      job_templates:
+      - name: checkpoint-firewall-run-compliance
+      - name: checkpoint-firewall-run-report
+      workflow:
+      - job_template: checkpoint-firewall-run-compliance
+        success:
+        - job_template: checkpoint-firewall-run-report
+    
+    # - name: ddns-compliance-devel
+    #   org: Development
+    
+    - name: ddns-compliance-prod
+      org: Operations
+      job_templates:
+      - name: ddns-firewall-run-compliance
+      - name: ddns-firewall-run-report
+      workflow:
+      - job_template: ddns-firewall-run-compliance
+        success:
+        - job_template: ddns-firewall-run-report
+      
+    # - name: f5-automation-devel
+    #   org: Development
+
+    - name: f5-automation-prod
+      org: Operations
+      job_templates:
+      - name: f5-automation-run-compliance
+      - name: f5-automation-run-report
+      workflow:
+      - job_template: f5-automation-run-compliance
+        success:
+        - job_template: f5-automation-run-report
+
+    # - name: radius-compliance-devel
+    #   org: Development
+
+    - name: radius-compliance-prod
+      org: Operations
+      job_templates:
+      - name: radius-automation-run-compliance
+      - name: radius-automation-run-report
+      workflow:
+      - job_template: radius-automation-run-compliance
+        success:
+        - job_template: radius-automation-run-report
+
+  tasks:
+  # - tower_organization:
+  #     name: "{{ item }}"
+  #   loop: "{{ orgs }}"
+
+  # - tower_project:
+  #     name: "{{ item.name }}"
+  #     organization: "{{ item.org }}"
+  #     scm_type: git
+  #     scm_url: https://github.com/mpetrive-rh/ansible-demo1.git
+  #   loop: "{{ projects }}"
+
+  # - tower_job_template:
+  #     name: "{{ item.1.name }}"
+  #     playbook: ping.yml
+  #     project: "{{ item.0.name }}"
+  #     job_type: run
+  #     inventory: default-prod
+  #   loop: "{{ projects | subelements('job_templates') }}"
+
+  # - tower_workflow_template:
+  #     name: "{{ item.name }}-workflow"
+  #     schema: "{{ item.workflow}}"
+  #   loop: "{{projects}}"
+
+  - tower_workflow_template:
+      name: "prod-compliance-workflow"
+      schema: 
+      - workflow: radius-compliance-prod-workflow
+      - workflow: f5-automation-prod-workflow
+      - workflow: asa-firewall-compliance-prod-workflow
+      - workflow: asa-vpn-compliance-prod-workflow
+      - workflow: checkpoint-firewall-compliance-prod-workflow
+      - workflow: ddns-compliance-prod-workflow
+
+  module_defaults:
+    tower_organization:
+      tower_username: admin
+      tower_password: password
+      tower_host: "https://192.168.121.55"
+      validate_certs: false
+    tower_project:
+      tower_username: admin
+      tower_password: password
+      tower_host: "https://192.168.121.55"
+      validate_certs: false
+    tower_job_template:
+      tower_username: admin
+      tower_password: password
+      tower_host: "https://192.168.121.55"
+      validate_certs: false
+    tower_workflow_template:
+      tower_username: admin
+      tower_password: password
+      tower_host: "https://192.168.121.55"
+      validate_certs: false
